@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible defect in the pipeline or plugin.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please remove private note content and credentials before posting logs.
+  - type: input
+    id: version
+    attributes:
+      label: KnowledgeFlow version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python and Obsidian versions; redact personal paths if needed.
+    validations:
+      required: true

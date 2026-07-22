@@ -1,0 +1,12 @@
+{
+  "attachmentFolderPath": "assets",
+  "newLinkFormat": "shortest",
+  "showUnsupportedFiles": false,
+  "userIgnoreFilters": [
+    ".github/",
+    ".knowledgeflow/",
+    "docs/",
+    "src/",
+    "tests/"
+  ]
+}

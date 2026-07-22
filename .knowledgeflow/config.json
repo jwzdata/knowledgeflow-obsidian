@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "project_name": "KnowledgeFlow Obsidian",
+  "language": "zh-CN",
+  "inbox_note": "20-知识流入/00-流水线收件箱.md",
+  "home_note": "00-导航/00-首页.md",
+  "knowledge_root": "10-知识库",
+  "policy": {
+    "min_score": 68,
+    "min_summary_chars": 60,
+    "max_age_days": 730,
+    "max_items_per_source": 8,
+    "max_promotions_per_run": 24
+  },
+  "topics": [
+    {
+      "id": "ai-engineering",
+      "title": "AI 与工程",
+      "directory": "10-知识库/01-AI与工程",
+      "keywords": ["artificial intelligence", "machine learning", "large language model", "agent", "ai", "人工智能", "大模型", "智能体"]
+    },
+    {
+      "id": "economy-policy",
+      "title": "经济与政策",
+      "directory": "10-知识库/02-经济与政策",
+      "keywords": ["economy", "monetary", "inflation", "interest rate", "financial stability", "经济", "货币", "通胀", "利率", "金融稳定"]
+    },
+    {
+      "id": "general",
+      "title": "通用研究",
+      "directory": "10-知识库/99-通用研究",
+      "keywords": []
+    }
+  ],
+  "sources": [
+    {
+      "id": "federal-reserve-press",
+      "title": "Federal Reserve Press Releases",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+      "authority": "Federal Reserve Board",
+      "tier": "A",
+      "active": true,
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "宏观经济"]
+    },
+    {
+      "id": "bis-press",
+      "title": "BIS Press Releases",
+      "url": "https://www.bis.org/doclist/all_pressrels.rss",
+      "homepage": "https://www.bis.org/press/index.htm",
+      "authority": "Bank for International Settlements",
+      "tier": "A",
+      "active": true,
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "金融稳定"]
+    },
+    {
+      "id": "arxiv-ai",
+      "title": "arXiv cs.AI",
+      "url": "https://rss.arxiv.org/rss/cs.AI",
+      "homepage": "https://arxiv.org/list/cs.AI/recent",
+      "authority": "arXiv",
+      "tier": "B",
+      "active": true,
+      "require_keyword": true,
+      "topics": ["ai-engineering"],
+      "tags": ["论文", "AI"]
+    }
+  ]
+}

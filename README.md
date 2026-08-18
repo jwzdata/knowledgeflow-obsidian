@@ -27,6 +27,8 @@ KnowledgeFlow 的默认策略是：
 
 要求：macOS / Linux、Python 3.11+、Obsidian 桌面版。
 
+还没有安装 Obsidian？请从官方页面下载对应平台版本：[Obsidian 官方下载](https://obsidian.md/download)。
+
 ```bash
 git clone https://github.com/jwzdata/knowledgeflow-obsidian.git
 cd knowledgeflow-obsidian

@@ -10,7 +10,10 @@
     "min_summary_chars": 60,
     "max_age_days": 730,
     "max_items_per_source": 8,
-    "max_promotions_per_run": 24
+    "max_promotions_per_run": 24,
+    "detail_fallback_min_summary_chars": 80,
+    "detail_fallback_summary_limit": 1600,
+    "detail_fallback_timeout": 15
   },
   "topics": [
     {

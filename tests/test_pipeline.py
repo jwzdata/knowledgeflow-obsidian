@@ -2,11 +2,13 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from knowledgeflow.pipeline import (
     Store,
     append_jsonl,
     canonical_url,
+    extract_detail_summary,
     health,
     keyword_matches,
     load_jsonl,
@@ -81,6 +83,17 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(parse_feed(rss)[0]["title"], "AI update")
         self.assertEqual(parse_feed(atom, "https://example.test/feed")[0]["url"], "https://example.test/paper")
 
+    def test_extract_detail_summary_ignores_navigation_and_scripts(self):
+        html = """
+        <nav>Navigation should not enter the evidence summary</nav>
+        <main class='article-body'><h1>Official update</h1><p>Primary evidence is in the article body.</p>
+        <script>secret_tracking_payload()</script></main>
+        """
+        summary = extract_detail_summary(html)
+        self.assertIn("Primary evidence is in the article body", summary)
+        self.assertNotIn("Navigation should not", summary)
+        self.assertNotIn("secret_tracking", summary)
+
     def test_score_is_bounded_and_explained(self):
         item = {"title": "AI agent", "summary": "x" * 200, "url": "https://example.test/a", "published_at": "2026-07-20"}
         result = score_item(item, CONFIG["sources"][0], ["ai", "agent"], CONFIG)
@@ -137,6 +150,25 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(result["promoted"], 0)
         self.assertEqual(result["rejected"], 1)
         self.assertIn("required-topic-keyword-missing", result["rejected_items"][0]["reasons"])
+
+    def test_retry_rejected_requeues_after_detail_enrichment(self):
+        temp, store = self.make_store()
+        self.addCleanup(temp.cleanup)
+        config = store.config()
+        config["sources"][0]["kind"] = "html_detail"
+        store.config_file.write_text(json.dumps(config), "utf-8")
+        candidate = self.candidate()
+        candidate["summary"] = ""
+        append_jsonl(store.data / "candidates.jsonl", [candidate])
+        append_jsonl(store.data / "decisions.jsonl", [{"candidate_id": candidate["id"], "decision": "rejected", "reason": "summary<30"}])
+        enriched = "A detailed official page summary with enough evidence context to pass the promotion gate."
+        with patch("knowledgeflow.pipeline.fetch_detail_summary", return_value=enriched):
+            result = promote(store, retry_rejected=True)
+        self.assertEqual(result["requeued"], 1)
+        self.assertEqual(result["promoted"], 1)
+        decisions = load_jsonl(store.data / "decisions.jsonl")
+        self.assertEqual([row["decision"] for row in decisions[-2:]], ["requeued", "published"])
+        self.assertEqual(load_jsonl(store.data / "candidates.jsonl")[0]["summary"], enriched)
 
     def test_dry_run_simulates_sequential_numbers(self):
         temp, store = self.make_store()

@@ -5,7 +5,7 @@
 它把“订阅很多信息”变成一条真正闭环的流水线：
 
 ```text
-固定来源 → 抓取与去重 → 质量评分 → 自动过滤 → 主题路由
+固定来源 → 抓取与去重 → 详情页补抓 → 质量评分 → 自动过滤 → 主题路由
         → 编号 + 日期标题 → Obsidian 知识目录 → 仪表盘与健康检查
 ```
 
@@ -20,6 +20,7 @@ KnowledgeFlow 的默认策略是：
 - 自动生成带日期与连续编号的来源知识页；
 - 明确标记“自动入库、尚未复核、仅代表来源陈述”；
 - 将候选与决策记入账本，人工删除后不会自动重建；
+- 对摘要为空的 HTML 来源做非致命详情页补抓，并以 `requeued` 审计事件记录重试；
 - 不要求数据库、云服务或 API 密钥。
 
 ## 3 分钟开始
@@ -29,7 +30,7 @@ KnowledgeFlow 的默认策略是：
 ```bash
 git clone https://github.com/jwzdata/knowledgeflow-obsidian.git
 cd knowledgeflow-obsidian
-./kb.sh run
+./kb.sh run --retry-rejected
 ```
 
 然后在 Obsidian 中选择“打开文件夹作为仓库”，打开克隆后的目录。进入“设置 → 第三方插件”，关闭安全模式并启用 **KnowledgeFlow Review**。左侧丝带会出现流水线按钮。
@@ -66,6 +67,7 @@ python -m knowledgeflow --vault . run
 | `./kb.sh run` | 执行完整流水线 |
 | `./kb.sh sync` | 只抓取并写入候选账本 |
 | `./kb.sh promote --dry-run` | 预览自动过滤与入库结果 |
+| `./kb.sh promote --retry-rejected` | 对被摘要门槛过滤的候选执行详情页补抓后重试 |
 | `./kb.sh promote` | 路由、编号并生成文章 |
 | `./kb.sh render` | 重建 Obsidian 收件箱 |
 | `./kb.sh health` | 检查生成文章的元数据契约 |
@@ -78,6 +80,8 @@ python -m knowledgeflow --vault . run
 - `topics` 定义关键词、知识目录和显示名称；
 - `policy` 控制最低分、摘要长度、单来源容量和单次入库上限。
 
+摘要不足时，可在来源上设置 `"kind": "html"` / `"html_detail"` 或 `"detail_fallback": true`，并通过 `policy.detail_fallback_*` 控制详情页超时、摘要长度和最大抓取字符数。详情页抓取失败不会阻断其他来源。HTML 列表页的条目发现仍应由站点专用适配器负责。
+
 默认附带美联储、BIS 与 arXiv AI 三个演示来源。它们是配置示例，不代表项目方为第三方内容背书。生产使用前请按你的领域维护来源白名单，详见 [来源治理](docs/source-governance.md)。
 
 ## 项目结构
@@ -89,6 +93,7 @@ python -m knowledgeflow --vault . run
 10-知识库/            自动路由后的知识文章
 20-知识流入/          可视化收件箱
 docs/                 架构、治理与二次发行文档
+examples/             可复制的生产来源包
 src/knowledgeflow/    零第三方依赖的 Python 引擎
 tests/                离线回归测试
 ```
@@ -106,3 +111,7 @@ tests/                离线回归测试
 欢迎提交 Issue 和 Pull Request。开发与测试流程见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
 MIT License。
+
+## 生产运行补充
+
+生产环境的调度、日志位置、重试语义和从本地知识库提炼出的可复用经验，见 [运行与调度指南](docs/operations.md) 和 [2026-08 更新汇总](docs/recent-updates-2026-08.md)。

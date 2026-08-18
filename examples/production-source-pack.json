@@ -1,0 +1,127 @@
+{
+  "pack_version": "2026-08",
+  "description": "可复制的官方 RSS/Atom 来源起始包；请在生产使用前逐一核对条款、主题和抓取频率。",
+  "sources": [
+    {
+      "id": "federal-reserve-press",
+      "title": "Federal Reserve Press Releases",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+      "authority": "Federal Reserve Board",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "宏观经济"],
+      "require_keyword": false
+    },
+    {
+      "id": "bis-press",
+      "title": "BIS Press Releases",
+      "url": "https://www.bis.org/doclist/all_pressrels.rss",
+      "homepage": "https://www.bis.org/press/index.htm",
+      "authority": "Bank for International Settlements",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "金融稳定"],
+      "require_keyword": false
+    },
+    {
+      "id": "fda-drug-updates",
+      "title": "FDA—What's New: Drugs",
+      "url": "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/drugs/rss.xml",
+      "homepage": "https://www.fda.gov/drugs",
+      "authority": "U.S. Food and Drug Administration",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["FDA", "药品审批", "药物安全"],
+      "require_keyword": false
+    },
+    {
+      "id": "fda-press-releases",
+      "title": "FDA—Press Releases",
+      "url": "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml",
+      "homepage": "https://www.fda.gov/news-events/press-announcements",
+      "authority": "U.S. Food and Drug Administration",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "医药监管"],
+      "require_keyword": false
+    },
+    {
+      "id": "nist-cybersecurity",
+      "title": "NIST—Cybersecurity News",
+      "url": "https://www.nist.gov/news-events/cybersecurity/rss.xml",
+      "homepage": "https://www.nist.gov/news-events/cybersecurity",
+      "authority": "National Institute of Standards and Technology",
+      "tier": "A",
+      "topics": ["ai-engineering"],
+      "tags": ["信息安全", "零信任", "密码学"],
+      "require_keyword": true
+    },
+    {
+      "id": "who-newsroom",
+      "title": "WHO—Newsroom",
+      "url": "https://www.who.int/rss-feeds/news-english.xml",
+      "homepage": "https://www.who.int/news-room/",
+      "authority": "World Health Organization",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "公共卫生"],
+      "require_keyword": false
+    },
+    {
+      "id": "wto-news-rss",
+      "title": "WTO—All News",
+      "url": "https://www.wto.org/library/rss/latest_news_e.xml",
+      "homepage": "https://www.wto.org/english/res_e/webcas_e/rss_e.htm",
+      "authority": "World Trade Organization",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "国际贸易", "贸易规则"],
+      "require_keyword": true
+    },
+    {
+      "id": "eia-today-in-energy",
+      "title": "EIA—Today in Energy",
+      "url": "https://www.eia.gov/rss/todayinenergy.xml",
+      "homepage": "https://www.eia.gov/todayinenergy/",
+      "authority": "U.S. Energy Information Administration",
+      "tier": "A",
+      "topics": ["economy-policy"],
+      "tags": ["官方来源", "能源", "大宗商品"],
+      "require_keyword": true
+    },
+    {
+      "id": "openai-news",
+      "title": "OpenAI—News and Research",
+      "url": "https://openai.com/news/rss.xml",
+      "homepage": "https://openai.com/news/",
+      "authority": "OpenAI",
+      "tier": "B",
+      "topics": ["ai-engineering"],
+      "tags": ["大模型", "智能体", "AI工程"],
+      "require_keyword": true
+    },
+    {
+      "id": "google-deepmind-blog",
+      "title": "Google DeepMind Blog",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "homepage": "https://deepmind.google/blog/",
+      "authority": "Google DeepMind",
+      "tier": "A",
+      "topics": ["ai-engineering"],
+      "tags": ["官方来源", "AI研究"],
+      "require_keyword": true
+    },
+    {
+      "id": "arxiv-ai",
+      "title": "arXiv cs.AI",
+      "url": "https://rss.arxiv.org/rss/cs.AI",
+      "homepage": "https://arxiv.org/list/cs.AI/recent",
+      "authority": "arXiv",
+      "tier": "B",
+      "topics": ["ai-engineering"],
+      "tags": ["论文", "AI"],
+      "require_keyword": true
+    }
+  ]
+}

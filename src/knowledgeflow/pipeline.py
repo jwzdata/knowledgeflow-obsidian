@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import re
 import ssl
 import urllib.parse
@@ -17,8 +18,11 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
-USER_AGENT = "KnowledgeFlow-Obsidian/1.0 (+https://github.com/jwzdata/knowledgeflow-obsidian)"
+USER_AGENT = "KnowledgeFlow-Obsidian/1.1 (+https://github.com/jwzdata/knowledgeflow-obsidian)"
 TRACKING_KEYS = {"utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "fbclid", "gclid"}
+DETAIL_CONTAINER_TAGS = {"article", "main"}
+DETAIL_SKIP_TAGS = {"script", "style", "svg", "noscript", "nav", "header", "footer", "aside", "form"}
+DETAIL_SELECTOR_RE = re.compile(r"(?:article|main|content|detail|正文|正文内容|articlebody|mainbody|neirong)", re.I)
 
 
 def utc_now() -> str:
@@ -55,6 +59,15 @@ def append_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("a", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def save_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    """Atomically rewrite a JSONL ledger after deterministic enrichment."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary.write_text("".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows), "utf-8")
+    temporary.replace(path)
 
 
 def canonical_url(value: str) -> str:
@@ -96,6 +109,58 @@ def plain_text(value: str, limit: int = 1600) -> str:
     except Exception:
         value = re.sub(r"<[^>]+>", " ", value or "")
     return re.sub(r"\s+", " ", html.unescape(value)).strip()[:limit]
+
+
+class _DetailText(HTMLParser):
+    """Extract readable text from likely article containers on HTML detail pages."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.candidate_depth = 0
+        self.skip_depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag = tag.lower()
+        attrs_map = {key.lower(): value or "" for key, value in attrs}
+        if self.candidate_depth:
+            self.candidate_depth += 1
+            if tag in DETAIL_SKIP_TAGS:
+                self.skip_depth += 1
+            return
+        if tag in DETAIL_SKIP_TAGS:
+            self.skip_depth += 1
+            return
+        marker = " ".join((attrs_map.get("id", ""), attrs_map.get("class", "")))
+        if tag in DETAIL_CONTAINER_TAGS or DETAIL_SELECTOR_RE.search(marker):
+            self.candidate_depth = 1
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if self.skip_depth and tag in DETAIL_SKIP_TAGS:
+            self.skip_depth -= 1
+        if self.candidate_depth:
+            self.candidate_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self.candidate_depth and not self.skip_depth:
+            text = re.sub(r"\s+", " ", html.unescape(data)).strip()
+            if text:
+                self.parts.append(text)
+
+
+def extract_detail_summary(payload: str | bytes, limit: int = 1600) -> str:
+    """Return a bounded article-body summary without navigation or scripts."""
+
+    if isinstance(payload, bytes):
+        payload = payload.decode("utf-8", errors="ignore")
+    parser = _DetailText()
+    try:
+        parser.feed(payload or "")
+        parser.close()
+    except Exception:
+        return ""
+    return re.sub(r"\s+", " ", " ".join(parser.parts)).strip()[:limit]
 
 
 def _local(tag: str) -> str:
@@ -187,10 +252,51 @@ class Store:
         return config
 
 
-def _fetch(url: str, timeout: int = 25) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9"})
+def _fetch(url: str, timeout: int = 25, *, accept: str = "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9") -> bytes:
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept})
     with urllib.request.urlopen(request, timeout=timeout, context=ssl.create_default_context()) as response:
         return response.read(4_000_000)
+
+
+def fetch_detail_summary(url: str, timeout: int = 15, limit: int = 1600) -> str:
+    """Best-effort extraction from an item's official HTML page.
+
+    Detail fetches are deliberately non-fatal.  A feed item remains usable as
+    a source card even when its page blocks automation or changes markup.
+    """
+
+    try:
+        payload = _fetch(url, timeout=timeout, accept="text/html, application/xhtml+xml;q=0.9")
+    except Exception:
+        return ""
+    return extract_detail_summary(payload, limit=limit)
+
+
+def _detail_fallback_enabled(source: dict[str, Any]) -> bool:
+    return bool(source.get("detail_fallback", source.get("kind") in {"html", "html_detail"}))
+
+
+def _enrich_item_summary(item: dict[str, str], source: dict[str, Any], config: dict[str, Any]) -> tuple[dict[str, str], str]:
+    policy = config.get("policy", {})
+    minimum = int(policy.get("detail_fallback_min_summary_chars", 80))
+    if not _detail_fallback_enabled(source) or len(item.get("summary", "")) >= minimum:
+        return item, "not-needed"
+    summary = fetch_detail_summary(
+        item.get("url", ""),
+        timeout=int(policy.get("detail_fallback_timeout", 15)),
+        limit=int(policy.get("detail_fallback_summary_limit", 1600)),
+    )
+    if not summary:
+        return item, "failed"
+    enriched = dict(item)
+    enriched["summary"] = summary
+    enriched["detail_fallback"] = "true"
+    topic, hits = _topic_for(enriched, source, config)
+    enriched["topic_id"] = topic["id"]
+    enriched["topic_title"] = topic["title"]
+    enriched["topic_directory"] = topic["directory"]
+    enriched["quality"] = score_item(enriched, source, hits, config)
+    return enriched, "enriched"
 
 
 def _topic_for(item: dict[str, str], source: dict[str, Any], config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
@@ -235,6 +341,8 @@ def sync(store: Store, *, offline: bool = False) -> dict[str, Any]:
     seen = {row.get("id") for row in existing}
     new_rows: list[dict[str, Any]] = []
     results: list[dict[str, Any]] = []
+    detail_fallbacks = 0
+    detail_failures = 0
     for source in config["sources"]:
         if not source.get("active", True):
             continue
@@ -252,6 +360,11 @@ def sync(store: Store, *, offline: bool = False) -> dict[str, Any]:
                 candidate_id = "ki-" + hashlib.sha256(url.encode()).hexdigest()[:16]
                 if candidate_id in seen:
                     continue
+                item, detail_status = _enrich_item_summary(item, source, config)
+                if detail_status == "enriched":
+                    detail_fallbacks += 1
+                elif detail_status == "failed":
+                    detail_failures += 1
                 topic, hits = _topic_for(item, source, config)
                 quality = score_item(item, source, hits, config)
                 row = {
@@ -282,7 +395,16 @@ def sync(store: Store, *, offline: bool = False) -> dict[str, Any]:
             result.update({"status": "error", "error": f"{type(exc).__name__}: {exc}"[:300]})
         results.append(result)
     append_jsonl(store.data / "candidates.jsonl", new_rows)
-    report = {"ran_at": utc_now(), "offline": offline, "sources": len(results), "source_errors": sum(r["status"] == "error" for r in results), "new_candidates": len(new_rows), "results": results}
+    report = {
+        "ran_at": utc_now(),
+        "offline": offline,
+        "sources": len(results),
+        "source_errors": sum(r["status"] == "error" for r in results),
+        "new_candidates": len(new_rows),
+        "detail_fallbacks": detail_fallbacks,
+        "detail_failures": detail_failures,
+        "results": results,
+    }
     save_json(store.data / "sync_latest.json", report)
     return report
 
@@ -369,19 +491,36 @@ sources: [{_yaml_string(candidate['url'])}]
 '''
 
 
-def promote(store: Store, *, dry_run: bool = False) -> dict[str, Any]:
+def promote(store: Store, *, dry_run: bool = False, retry_rejected: bool = False) -> dict[str, Any]:
     config = store.config()
     policy = config["policy"]
     min_score = float(policy.get("min_score", 68))
     min_summary = int(policy.get("min_summary_chars", 60))
     decisions = _decisions(store)
     sources = {source["id"]: source for source in config["sources"]}
-    candidates = [row for row in load_jsonl(store.data / "candidates.jsonl") if row["id"] not in decisions]
+    candidate_rows = load_jsonl(store.data / "candidates.jsonl")
+    candidates: list[dict[str, Any]] = []
+    retry_events: list[dict[str, Any]] = []
+    changed_candidates = False
+    for row in candidate_rows:
+        prior = decisions.get(row["id"])
+        if prior is None:
+            candidates.append(row)
+            continue
+        if not retry_rejected or prior.get("decision") != "rejected":
+            continue
+        source = sources.get(row.get("source_id"), {})
+        enriched, detail_status = _enrich_item_summary(row, source, config)
+        if detail_status == "enriched":
+            candidates.append(enriched)
+            retry_events.append({"candidate_id": row["id"], "decision": "requeued", "mode": "auto-retry", "reason": "自动补抓详情页摘要后重试", "decided_at": utc_now()})
+            candidate_rows[candidate_rows.index(row)] = enriched
+            changed_candidates = True
     candidates.sort(key=lambda row: row.get("quality", {}).get("overall", 0), reverse=True)
     limit = int(policy.get("max_promotions_per_run", 24))
     promoted: list[dict[str, Any]] = []
     rejected: list[dict[str, Any]] = []
-    decision_rows: list[dict[str, Any]] = []
+    decision_rows: list[dict[str, Any]] = [*retry_events]
     next_numbers: dict[str, int] = {}
     for candidate in candidates:
         reasons = []
@@ -412,8 +551,20 @@ def promote(store: Store, *, dry_run: bool = False) -> dict[str, Any]:
         promoted.append({"id": candidate["id"], "title": candidate["title"], "path": relative.as_posix(), "score": candidate["quality"]["overall"]})
         decision_rows.append({"candidate_id": candidate["id"], "decision": "published", "path": relative.as_posix(), "decided_at": utc_now()})
     if not dry_run:
+        if changed_candidates:
+            save_jsonl(store.data / "candidates.jsonl", candidate_rows)
         append_jsonl(store.data / "decisions.jsonl", decision_rows)
-    report = {"ran_at": utc_now(), "dry_run": dry_run, "promoted": len(promoted), "rejected": len(rejected), "deferred": max(0, len(candidates) - len(promoted) - len(rejected)), "items": promoted, "rejected_items": rejected}
+    report = {
+        "ran_at": utc_now(),
+        "dry_run": dry_run,
+        "retry_rejected": retry_rejected,
+        "requeued": len(retry_events),
+        "promoted": len(promoted),
+        "rejected": len(rejected),
+        "deferred": max(0, len(candidates) - len(promoted) - len(rejected)),
+        "items": promoted,
+        "rejected_items": rejected,
+    }
     if not dry_run:
         save_json(store.data / "promote_latest.json", report)
     return report
@@ -468,9 +619,9 @@ def health(store: Store) -> dict[str, Any]:
     return report
 
 
-def run(store: Store, *, offline: bool = False) -> dict[str, Any]:
+def run(store: Store, *, offline: bool = False, retry_rejected: bool = False) -> dict[str, Any]:
     sync_report = sync(store, offline=offline)
-    promote_report = promote(store)
+    promote_report = promote(store, retry_rejected=retry_rejected)
     dashboard = render_dashboard(store)
     health_report = health(store)
     report = {"ran_at": utc_now(), "sync": sync_report, "promote": promote_report, "dashboard": dashboard, "health": health_report}

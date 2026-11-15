@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "KnowledgeFlow 一键入库预设",
+  "behavior": "create",
+  "noteNameFormat": "{{date|date:\"YYYY-MM-DD\"}}-{{title|safe_name}}",
+  "path": "10-知识库/99-通用研究",
+  "noteContentFormat": "## 核心摘要\n\n> [!TIP] 剪藏入库说明\n> 通过 Obsidian Web Clipper 采集。归档前请确认 `sources`、`as_of` 与适用边界。\n\n{{description}}\n\n## 正文节选\n\n{{content}}\n\n## 原始来源\n\n- 原文：[{{title}}]({{url}})\n- 采集日期：{{date}}\n",
+  "properties": [
+    { "name": "id", "value": "clip-{{date|date:\"YYYYMMDDHHmmss\"}}", "type": "text" },
+    { "name": "title", "value": "{{title}}", "type": "text" },
+    { "name": "summary", "value": "{{description}}", "type": "text" },
+    { "name": "type", "value": "reference", "type": "text" },
+    { "name": "status", "value": "needs-verification", "type": "text" },
+    { "name": "rag_priority", "value": "secondary", "type": "text" },
+    { "name": "created", "value": "{{date}}", "type": "date" },
+    { "name": "updated", "value": "{{date}}", "type": "date" },
+    { "name": "content_updated", "value": "{{date}}", "type": "date" },
+    { "name": "as_of", "value": "{{published|date:\"YYYY-MM-DD\"}}", "type": "date" },
+    { "name": "source_type", "value": "curated", "type": "text" },
+    { "name": "verification", "value": "pending", "type": "text" },
+    { "name": "tags", "value": "[\"WebClipper\", \"待核验\"]", "type": "multitext" },
+    { "name": "sources", "value": "[\"{{url}}\"]", "type": "multitext" },
+    { "name": "related", "value": "[]", "type": "multitext" }
+  ],
+  "triggers": []
+}

@@ -3,8 +3,28 @@
   "project_name": "KnowledgeFlow Obsidian",
   "language": "zh-CN",
   "inbox_note": "20-知识流入/00-流水线收件箱.md",
+  "hot_cache_note": "00-导航/01-智能体热启动上下文.md",
   "home_note": "00-导航/00-首页.md",
   "knowledge_root": "10-知识库",
+  "synonyms": [
+    { "terms": ["碳关税", "碳边境"], "expansions": ["cbam", "eu-ets"] },
+    { "terms": ["大模型", "智能体"], "expansions": ["llm", "agent", "rag"] },
+    { "terms": ["架构决策"], "expansions": ["adr", "constraint"] }
+  ],
+  "entity_anchors": [
+    {
+      "keywords": ["adr", "草稿隔离", "来源优先", "红线"],
+      "target": "10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation"
+    },
+    {
+      "keywords": ["cbam", "碳关税", "碳边境"],
+      "target": "10-知识库/02-经济与政策/000-CBAM-and-Global-Carbon-Pricing-Overview"
+    },
+    {
+      "keywords": ["hot-cache", "context-pack", "bm25", "混合检索"],
+      "target": "10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG"
+    }
+  ],
   "policy": {
     "min_score": 68,
     "min_summary_chars": 60,

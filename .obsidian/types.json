@@ -1,0 +1,31 @@
+{
+  "types": {
+    "id": "text",
+    "title": "text",
+    "summary": "text",
+    "type": "text",
+    "status": "text",
+    "rag_priority": "text",
+    "source_type": "text",
+    "source_coverage": "text",
+    "content_level": "text",
+    "verification": "text",
+    "review_status": "text",
+    "knowledge_status": "text",
+    "ingestion_mode": "text",
+    "auto_ingested": "checkbox",
+    "auto_quality_score": "number",
+    "candidate_id": "text",
+    "source_feed": "text",
+    "as_of": "date",
+    "created": "date",
+    "updated": "date",
+    "content_updated": "date",
+    "relations_updated": "date",
+    "next_review": "date",
+    "tags": "tags",
+    "aliases": "aliases",
+    "sources": "multitext",
+    "related": "multitext"
+  }
+}

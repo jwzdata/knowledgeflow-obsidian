@@ -1,9 +1,9 @@
 {
   "id": "knowledgeflow-review",
   "name": "KnowledgeFlow Review",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "minAppVersion": "1.5.0",
-  "description": "Run and inspect the KnowledgeFlow knowledge-inflow pipeline.",
+  "description": "AI-native knowledge inflow, hot-cache navigation, hybrid search, and proposal challenge for Obsidian.",
   "author": "KnowledgeFlow contributors",
   "isDesktopOnly": true
 }

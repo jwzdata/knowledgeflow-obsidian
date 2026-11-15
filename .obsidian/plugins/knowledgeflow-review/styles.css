@@ -24,3 +24,7 @@
 .kf-panel li { margin: 10px 0; color: var(--text-muted); }
 .kf-panel small { display: block; margin-top: 18px; color: var(--text-faint); }
 @media (max-width: 600px) { .knowledgeflow-view { padding: 16px; } .kf-stats { grid-template-columns: repeat(2, 1fr); } }
+.kf-modal-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.kf-modal-row input { flex: 1; }
+.kf-modal-results { max-height: 380px; overflow-y: auto; margin-top: 10px; }
+.kf-modal-snippet { color: var(--text-muted); font-size: 12px; margin: 4px 0 8px; }

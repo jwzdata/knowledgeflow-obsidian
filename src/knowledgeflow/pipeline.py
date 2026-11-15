@@ -18,7 +18,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
-USER_AGENT = "KnowledgeFlow-Obsidian/1.1 (+https://github.com/jwzdata/knowledgeflow-obsidian)"
+USER_AGENT = "KnowledgeFlow-Obsidian/2.0 (+https://github.com/jwzdata/knowledgeflow-obsidian)"
 TRACKING_KEYS = {"utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "fbclid", "gclid"}
 DETAIL_CONTAINER_TAGS = {"article", "main"}
 DETAIL_SKIP_TAGS = {"script", "style", "svg", "noscript", "nav", "header", "footer", "aside", "form"}
@@ -448,6 +448,7 @@ source_type: "curated"
 source_coverage: "source-card"
 verification: "automated-source-only"
 content_level: "summary"
+rag_priority: "secondary"
 ingestion_mode: "auto"
 auto_ingested: true
 auto_quality_score: {quality['overall']}
@@ -620,10 +621,20 @@ def health(store: Store) -> dict[str, Any]:
 
 
 def run(store: Store, *, offline: bool = False, retry_rejected: bool = False) -> dict[str, Any]:
+    from .agent_tools import build_hot_cache
+
     sync_report = sync(store, offline=offline)
     promote_report = promote(store, retry_rejected=retry_rejected)
     dashboard = render_dashboard(store)
+    hot_cache = build_hot_cache(store)
     health_report = health(store)
-    report = {"ran_at": utc_now(), "sync": sync_report, "promote": promote_report, "dashboard": dashboard, "health": health_report}
+    report = {
+        "ran_at": utc_now(),
+        "sync": sync_report,
+        "promote": promote_report,
+        "dashboard": dashboard,
+        "hot_cache": hot_cache,
+        "health": health_report,
+    }
     save_json(store.data / "run_latest.json", report)
     return report

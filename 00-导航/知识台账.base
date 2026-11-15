@@ -1,0 +1,94 @@
+filters:
+  and:
+    - 'file.ext == "md"'
+    - '!file.path.startsWith("00-模板/")'
+views:
+  - type: table
+    name: 全部知识
+    order:
+      - file.name
+      - type
+      - status
+      - rag_priority
+      - updated
+      - auto_quality_score
+    sort:
+      - property: updated
+        direction: DESC
+  - type: table
+    name: 活跃常青与核心研究
+    filters:
+      and:
+        - 'status == "active" || status == "maintained"'
+        - 'type != "dashboard" && type != "moc" && type != "index"'
+    order:
+      - file.name
+      - type
+      - content_updated
+      - sources
+    sort:
+      - property: content_updated
+        direction: DESC
+  - type: table
+    name: 架构决策记录 (ADR)
+    filters:
+      or:
+        - 'type == "decision"'
+        - 'file.path.contains("ADR")'
+    order:
+      - file.name
+      - status
+      - updated
+      - summary
+      - related
+    sort:
+      - property: updated
+        direction: DESC
+  - type: table
+    name: 自动流入来源卡
+    filters:
+      and:
+        - 'auto_ingested == true'
+    order:
+      - file.name
+      - auto_quality_score
+      - source_feed
+      - review_status
+      - content_updated
+    sort:
+      - property: auto_quality_score
+        direction: DESC
+  - type: table
+    name: 待核验队列
+    filters:
+      or:
+        - 'status == "needs-verification"'
+        - 'review_status == "unreviewed"'
+    order:
+      - file.name
+      - status
+      - as_of
+      - next_review
+      - verification
+  - type: table
+    name: 草稿隔离箱
+    filters:
+      and:
+        - 'status == "draft"'
+    order:
+      - file.name
+      - updated
+      - summary
+  - type: cards
+    name: 图片与附件资源库
+    filters:
+      and:
+        - '["png", "jpg", "jpeg", "webp", "svg", "pdf"].contains(file.ext)'
+    order:
+      - file.name
+      - file.folder
+      - file.size
+      - file.mtime
+    sort:
+      - property: file.mtime
+        direction: DESC

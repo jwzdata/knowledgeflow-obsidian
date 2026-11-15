@@ -1,0 +1,43 @@
+{
+  "collapse-filter": false,
+  "search": "-path:00-模板",
+  "showTags": true,
+  "showAttachments": false,
+  "hideUnresolved": true,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "[\"type\":\"decision\"] OR path:03-架构决策",
+      "color": { "a": 1, "rgb": 14701138 }
+    },
+    {
+      "query": "[\"status\":\"needs-verification\"]",
+      "color": { "a": 1, "rgb": 14725400 }
+    },
+    {
+      "query": "[\"status\":\"draft\"]",
+      "color": { "a": 1, "rgb": 8947848 }
+    },
+    {
+      "query": "[\"auto_ingested\":true]",
+      "color": { "a": 1, "rgb": 5419488 }
+    },
+    {
+      "query": "[\"status\":\"active\"] OR [\"status\":\"maintained\"]",
+      "color": { "a": 1, "rgb": 3656079 }
+    }
+  ],
+  "collapse-display": true,
+  "showArrow": true,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1.15,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.45,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 220,
+  "scale": 1,
+  "close": false
+}

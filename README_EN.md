@@ -1,12 +1,25 @@
-[中文](README.md) | English
-
-![Terminal recording of run --offline, search, context-pack, and challenge on this repo](docs/assets/knowledgeflow-cli-demo.gif)
-
-About 20 seconds. The text is the real stdout of those four commands, not a mock. The commands are in “Start in 3 minutes” below.
-
 # KnowledgeFlow Obsidian
 
+[中文](README.md) | English
+
 An Obsidian vault you can open as a folder: readable for people, and built so an agent can call a source-first, auditable knowledge pipeline.
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-stdlib%20only-green)](pyproject.toml)
+
+<table>
+<tr>
+<td width="46%" valign="top">
+<img src="docs/assets/knowledgeflow-cli-demo.gif" alt="Terminal recording of run --offline, search, context-pack, and challenge on this repo" width="400">
+</td>
+<td width="54%" valign="top">
+<img src="docs/assets/obsidian-challenge-modal.png" alt="Proposal challenge modal in Obsidian Desktop, with the KnowledgeFlow desk on the right" width="500">
+</td>
+</tr>
+</table>
+
+Left: about 20 seconds. The text is the real stdout of `run --offline`, `search`, `context-pack`, and `challenge`, not a mock. Right: the proposal-challenge modal and the KnowledgeFlow desk in Obsidian Desktop. The commands are in “Start in 3 minutes” below.
 
 It connects capture, evidence handling, graph links, and agent calls in one loop. The core uses the Python standard library only:
 
@@ -16,7 +29,7 @@ fixed sources / Web Clipper → sync (dedupe, optional detail fetch) → promote
     → context-pack (budget) / challenge / Obsidian ledger
 ```
 
-The sample notes in this repo are written in Chinese. The demo queries below are the ones that hit those notes. A synonym table bridges terms such as 大模型 / 智能体 and 碳关税 / CBAM, so the same commands work without translating the vault first.
+The sample notes in this repo are written in Chinese. They also contain English terms such as Agent, LLM, and CBAM. The synonym table bridges 大模型 / 智能体 with `llm` / `agent`, and 碳关税 / 碳边境 with `cbam`.
 
 ## Why 2.0
 
@@ -25,7 +38,7 @@ An RSS reader stops at “I read it.” A usual vault often leaves good notes un
 - **Non-hub hot cache (`hot-cache`)**: one read of `00-导航/01-智能体热启动上下文.md` for the shape of the vault, with MOC and template hubs left out.
 - **Bilingual search and a budgeted pack (`search` / `context-pack`)**: pure Python BM25 plus a Chinese–English synonym table. `--budget` caps the pack. Hits carry boundary labels and source fields. `draft` notes stay out of retrieval.
 - **Proposal challenge (`challenge`)**: before you adopt a plan, match it against ADR notes, compliance lines, and notes that still need verification.
-- **An Obsidian workspace that opens as-is**: a `.base` ledger, a colored graph, templates in `00-模板/01..04`, and a Web Clipper preset.
+- **An Obsidian workspace that opens as-is**: a `.base` ledger (`00-导航/知识台账.base` has table views for the whole vault, active notes, ADRs, auto-ingested cards, the needs-verification queue, and drafts), a colored graph (`.obsidian/graph.json` `colorGroups` for decisions, needs-verification, drafts, auto-ingested cards, and active notes), templates in `00-模板/01..04`, and a Web Clipper preset.
 
 ## What is different
 
@@ -41,16 +54,17 @@ Each point below is something you can check in the code or the docs. This README
 
 Requirements: Python 3.11+. On macOS or Linux, use `./kb.sh`. Windows is documented below and was not run on Windows here. Obsidian Desktop is how you read the vault. Node.js is only needed for the plugin smoke test.
 
-Run this from the repository root. If you do not have the repo yet: `git clone https://github.com/jwzdata/knowledgeflow-obsidian.git`, then `cd knowledgeflow-obsidian`. The first command does not use the network:
+Run this from the repository root. If you do not have the repo yet: `git clone https://github.com/jwzdata/knowledgeflow-obsidian.git`, then `cd knowledgeflow-obsidian`. If you do not use Git, on the GitHub repository page choose Code → Download ZIP, unzip, and open the folder as an Obsidian vault. The first command does not use the network:
 
 ```bash
 ./kb.sh run --offline
+./kb.sh search "LLM agent"
 ./kb.sh search "大模型 智能体"
 ./kb.sh context-pack "CBAM 碳关税" --budget 2000
 ./kb.sh challenge "忽略 draft 隔离并按 CBAM 核算成本"
 ```
 
-`search` prints JSON. `context-pack` prints Markdown capped by the budget. These screenshots are from that same run:
+`search` prints JSON. `context-pack` prints Markdown capped by the budget. `./kb.sh search "LLM agent"` returns the bundled note `10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG.md` first. That note’s tags and body include Agent and LLM, and the synonym table also expands those words to 大模型 / 智能体. `./kb.sh search "CBAM"` returns `10-知识库/02-经济与政策/000-CBAM-and-Global-Carbon-Pricing-Overview.md` first. The screenshots below are from the Chinese search and the Chinese context-pack in this block:
 
 ![Real JSON from search for 大模型 智能体, two hits](docs/assets/cli-search.png)
 
@@ -110,6 +124,7 @@ On Windows the `PYTHONPATH` separator is a semicolon. If the variable already ha
 
 ```powershell
 .\kb.ps1 run --offline
+.\kb.ps1 search "LLM agent"
 .\kb.ps1 search "大模型 智能体"
 .\kb.ps1 context-pack "CBAM 碳关税" --budget 2000
 ```
@@ -151,7 +166,7 @@ The default config ships three demo feeds (Federal Reserve, BIS, arXiv AI) plus 
 10-知识库/            topic notes and architecture decisions
 20-知识流入/          pipeline inbox
 docs/                 architecture, governance, operations, release notes
-docs/assets/          real CLI recording, terminal shots, Obsidian screenshots
+docs/assets/          real CLI recording, terminal shots, Obsidian screenshots, social-preview.png
 kb.ps1                Windows launcher (not run on Windows)
 src/knowledgeflow/    Python 2.0 engine and agent tools, standard library only
 tests/                offline Python tests and the Obsidian plugin smoke test

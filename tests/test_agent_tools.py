@@ -75,6 +75,17 @@ class AgentToolsTests(unittest.TestCase):
         )
         return tmp, Store(vault)
 
+    def test_search_skips_english_readme(self):
+        tmp, store = self.make_vault()
+        self.addCleanup(tmp.cleanup)
+        (store.vault / "README_EN.md").write_text(
+            "# KnowledgeFlow Obsidian\nLLM agent and CBAM 碳关税 should not outrank vault notes.\n",
+            "utf-8",
+        )
+        res = search_vault(store, "LLM agent", limit=5)
+        sources = [r["source"] for r in res["results"]]
+        self.assertNotIn("README_EN.md", sources)
+
     def test_search_uses_bilingual_synonyms_and_isolates_drafts(self):
         tmp, store = self.make_vault()
         self.addCleanup(tmp.cleanup)

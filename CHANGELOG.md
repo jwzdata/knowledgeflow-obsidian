@@ -2,6 +2,10 @@
 
 本项目遵循 [Semantic Versioning](https://semver.org/)。
 
+## Unreleased
+
+- `search` 不再把仓库根目录的 `README_EN.md` 当作知识笔记，与 `README.md` 等项目说明文件一样排除在检索之外。
+
 ## 2.0.0 - 2026-11-15
 
 - 新增 `agent_tools.py` 零依赖 AI 原生工具引擎与 5 个新 CLI 子命令：`search`、`hot-cache`、`context-pack`、`challenge`、`crosslink`。

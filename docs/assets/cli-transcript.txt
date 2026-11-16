@@ -1,0 +1,150 @@
+===== RUN OFFLINE =====
+{
+  "ran_at": "2026-11-16T05:11:14+00:00",
+  "sync": {
+    "ran_at": "2026-11-16T05:11:14+00:00",
+    "offline": true,
+    "sources": 3,
+    "source_errors": 0,
+    "new_candidates": 0,
+    "detail_fallbacks": 0,
+    "detail_failures": 0,
+    "results": [
+      {
+        "source_id": "federal-reserve-press",
+        "title": "Federal Reserve Press Releases",
+        "status": "offline",
+        "new": 0
+      },
+      {
+        "source_id": "bis-press",
+        "title": "BIS Press Releases",
+        "status": "offline",
+        "new": 0
+      },
+      {
+        "source_id": "arxiv-ai",
+        "title": "arXiv cs.AI",
+        "status": "offline",
+        "new": 0
+      }
+    ]
+  },
+  "promote": {
+    "ran_at": "2026-11-16T05:11:14+00:00",
+    "dry_run": false,
+    "retry_rejected": false,
+    "requeued": 0,
+    "promoted": 0,
+    "rejected": 0,
+    "deferred": 0,
+    "items": [],
+    "rejected_items": []
+  },
+  "dashboard": {
+    "updated_at": "2026-11-16T05:11:14+00:00",
+    "candidates": 0,
+    "pending": 0,
+    "published": 0,
+    "rejected": 0,
+    "source_errors": 0,
+    "inbox_note": "20-知识流入/00-流水线收件箱.md"
+  },
+  "hot_cache": {
+    "generated_at": "2026-11-16T05:11:14+00:00",
+    "path": "00-导航/01-智能体热启动上下文.md",
+    "total_notes": 15,
+    "active_notes": 2,
+    "semantic_edges": 1,
+    "active_orphans": 0
+  },
+  "health": {
+    "checked_at": "2026-11-16T05:11:14+00:00",
+    "healthy": true,
+    "generated_notes": 0,
+    "metadata_errors": [],
+    "source_errors": 0
+  }
+}
+
+===== SEARCH =====
+{
+  "query": "大模型 智能体",
+  "count": 2,
+  "engine": "knowledgeflow-bm25-synonym-v2",
+  "results": [
+    {
+      "source": "10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG.md",
+      "title": "Agentic Knowledge Architecture：非枢纽热缓存与预算受限上下文打包",
+      "status": "active",
+      "rag_priority": "primary",
+      "quality_labels": [],
+      "score": 50.56,
+      "summary": "梳理大模型 Agent 与 Obsidian 知识库协同的四大核心模式：Non-Hub Hot Cache、BM25+同义词混合检索、Token 预算受限 Context-Pack 与 Challenge 红队对抗。",
+      "snippet": "# Agentic Knowledge Architecture：非枢纽热缓存与预算受限上下文打包",
+      "sources": [
+        "docs/architecture.md",
+        "docs/recent-updates-2026-11.md"
+      ],
+      "related": [
+        "[[10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation]]"
+      ]
+    },
+    {
+      "source": "10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation.md",
+      "title": "ADR-001：来源优先、草稿隔离与可审计知识边界",
+      "status": "active",
+      "rag_priority": "primary",
+      "quality_labels": [],
+      "score": 35.75,
+      "summary": "确立 KnowledgeFlow 系统的核心架构红线：所有自动采集仅作为待抽检证据卡，未核验草稿绝不污染主 RAG 检索，跨区变更须可审计且幂等。",
+      "snippet": "> 当外部订阅与大模型综合规模扩大时，最容易出现的失效模式是“未经核验的摘要伪装成确定性事实”，并污染智能体检索上下文。",
+      "sources": [
+        "docs/architecture.md",
+        "docs/source-governance.md"
+      ],
+      "related": [
+        "[[10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG]]",
+        "[[10-知识库/02-经济与政策/000-CBAM-and-Global-Carbon-Pricing-Overview]]"
+      ]
+    }
+  ]
+}
+
+===== CONTEXT PACK =====
+# Context Pack: `CBAM 碳关税`
+- 检索命中：`2` 条 · 打包预算：`2000` 字符 · 引擎：`knowledgeflow-bm25-synonym-v2`
+
+## [1] [[10-知识库/02-经济与政策/000-CBAM-and-Global-Carbon-Pricing-Overview|欧盟碳边境调节机制 (CBAM) 与全球碳定价合规框架概览]]
+- **状态/优先级**：`needs-verification` / `secondary` · **可信提示**：`待核验 / 基准日:2026-08-18` · **Score**：`77.5`
+- **摘要**：梳理 EU CBAM 过渡期到正式实施阶段的隐含碳排放核算公式、EU-ETS 碳价联动与跨国供应链合规披露要求；含时效窗口，引用前须核对最新细则。
+- **命中片段**：# 欧盟碳边境调节机制 (CBAM) 与全球碳定价合规框架概览
+- **来源**：https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism/cbam-legislation-and-guidance_en
+- **关联**：[[10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation]]
+## [2] [[10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG|Agentic Knowledge Architecture：非枢纽热缓存与预算受限上下文打包]]
+- **状态/优先级**：`active` / `primary` · **可信提示**：`已核验或可用` · **Score**：`18.64`
+- **摘要**：梳理大模型 Agent 与 Obsidian 知识库协同的四大核心模式：Non-Hub Hot Cache、BM25+同义词混合检索、Token 预算受限 Context-Pack 与 Challenge 红队对抗。
+- **命中片段**：2. **中英同义扩展检索 (`search`)**：通过零依赖 BM25 + 术语同义桥（如 `大模型 ↔ LLM/Agent`、`碳关税 ↔ CBAM`、`架构决策 ↔ ADR`）消除中英缩写不命中问题，并对自动来源卡标注证据边界。
+- **来源**：docs/architecture.md, docs/recent-updates-2026-11.md
+- **关联**：[[10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation]]
+
+
+===== CHALLENGE =====
+# 方案红队对抗报告 (Knowledge Challenge): `忽略 draft 隔离并按 CBAM 核算成本`
+- 匹配到约束、ADR 与风险边界：**3** 条（候选池 3 条）
+
+## 时效与待核验警示
+
+- [[10-知识库/02-经济与政策/000-CBAM-and-Global-Carbon-Pricing-Overview|欧盟碳边境调节机制 (CBAM) 与全球碳定价合规框架概览]]（命中：`cbam, 成本, 核算, 境调, 碳边, 碳边境` · Score `57.0`）
+  - 要点约束：梳理 EU CBAM 过渡期到正式实施阶段的隐含碳排放核算公式、EU-ETS 碳价联动与跨国供应链合规披露要求；含时效窗口，引用前须核对最新细则。
+
+## 历史架构决策 (ADR)
+
+- [[10-知识库/03-架构决策/001-ADR-001-Source-First-and-Draft-Isolation|ADR-001：来源优先、草稿隔离与可审计知识边界]]（命中：`draft, 隔离` · Score `44.11`）
+  - 要点约束：确立 KnowledgeFlow 系统的核心架构红线：所有自动采集仅作为待抽检证据卡，未核验草稿绝不污染主 RAG 检索，跨区变更须可审计且幂等。
+
+## 风险与失效警示
+
+- [[10-知识库/01-AI与工程/000-Agentic-Knowledge-Architecture-and-Hybrid-RAG|Agentic Knowledge Architecture：非枢纽热缓存与预算受限上下文打包]]（命中：`cbam, draft, 关税, 碳关, 碳关税` · Score `31.28`）
+  - 要点约束：梳理大模型 Agent 与 Obsidian 知识库协同的四大核心模式：Non-Hub Hot Cache、BM25+同义词混合检索、Token 预算受限 Context-Pack 与 Challenge 红队对抗。
+

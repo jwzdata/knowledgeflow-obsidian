@@ -1,12 +1,25 @@
-中文 | [English](README_EN.md)
-
-![在本仓库实际执行 run --offline、search、context-pack 与 challenge 的终端录屏](docs/assets/knowledgeflow-cli-demo.gif)
-
-约 20 秒。画面里的文字是这四条命令的真实标准输出，不是示意图。命令见下方「3 分钟开始」。
-
 # KnowledgeFlow Obsidian
 
+中文 | [English](README_EN.md)
+
 一个可以直接用 Obsidian 打开、对人类阅读友好且面向 AI Agent 原生优化的、来源优先且可审计的知识系统。
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-stdlib%20only-green)](pyproject.toml)
+
+<table>
+<tr>
+<td width="46%" valign="top">
+<img src="docs/assets/knowledgeflow-cli-demo.gif" alt="在本仓库实际执行 run --offline、search、context-pack 与 challenge 的终端录屏" width="400">
+</td>
+<td width="54%" valign="top">
+<img src="docs/assets/obsidian-challenge-modal.png" alt="Obsidian 桌面版中的方案红队对抗质询弹窗，右侧是 KnowledgeFlow 操作台" width="500">
+</td>
+</tr>
+</table>
+
+左：约 20 秒。画面里的文字是 `run --offline`、`search`、`context-pack`、`challenge` 的真实标准输出，不是示意图。右：Obsidian 桌面版里的方案对抗弹窗和 KnowledgeFlow 操作台。命令见下方「3 分钟开始」。
 
 它把“信息采集 → 证据治理 → 图谱连通 → AI 智能体调用”打通为一条零第三方依赖的闭环流水线：
 
@@ -23,7 +36,7 @@
 - **非枢纽热缓存 (`hot-cache`)**：1 次读取 `00-导航/01-智能体热启动上下文.md` 掌握全库核心结构，自动剔除 MOC/模板枢纽噪声；
 - **双语混合检索与预算打包 (`search` / `context-pack`)**：纯 Python BM25 + 中英术语同义扩展，按 `--budget` 输出带可信边界标签与一手来源的紧凑证据包，并严格将 `draft` 隔离在检索之外；
 - **方案红队对抗 (`challenge`)**：方案落地或选型前自动检索历史 ADR 决策、合规红线与待核验警告；
-- **Obsidian 原生工作区**：开箱即用 `.base` 多维知识台账、分区着色关系图谱、`00-模板/01..04` 标准模板与 **Web Clipper** 浏览器一键入库预设。
+- **Obsidian 原生工作区**：开箱即用 `.base` 多维知识台账（`00-导航/知识台账.base` 的表格视图：全部知识、活跃笔记、ADR、自动流入、待核验、草稿）、分区着色关系图谱（`.obsidian/graph.json` 的 `colorGroups`：决策、待核验、草稿、自动入库、活跃）、`00-模板/01..04` 标准模板与 **Web Clipper** 浏览器一键入库预设。
 
 ## 和普通剪藏进库有什么不同
 
@@ -39,7 +52,7 @@
 
 要求：Python 3.11+。macOS / Linux 用 `./kb.sh`。Windows 见下文（未在 Windows 上跑过）。Obsidian 桌面版用来阅读这个仓库；可选 Node.js 跑插件冒烟测试。
 
-在仓库根目录执行。还没有代码时，先 `git clone https://github.com/jwzdata/knowledgeflow-obsidian.git`，再 `cd knowledgeflow-obsidian`。下面第一条命令不访问网络：
+在仓库根目录执行。还没有代码时，先 `git clone https://github.com/jwzdata/knowledgeflow-obsidian.git`，再 `cd knowledgeflow-obsidian`。不用 Git 时，在 GitHub 仓库页选择 Code → Download ZIP，解压后把该文件夹当作 Obsidian 仓库打开。下面第一条命令不访问网络：
 
 ```bash
 ./kb.sh run --offline
@@ -151,7 +164,7 @@ Windows 上 `PYTHONPATH` 的分隔符是分号。若原来已有值，应写成 
 10-知识库/            主题知识与架构决策目录
 20-知识流入/          可视化收件箱
 docs/                 架构、治理、运维调度与演进汇总
-docs/assets/          真实 CLI 录屏、终端截图与 Obsidian 界面截图
+docs/assets/          真实 CLI 录屏、终端截图、Obsidian 界面截图与 social-preview.png
 kb.ps1                Windows 启动脚本（未在 Windows 上运行过）
 src/knowledgeflow/    零第三方依赖的 Python 2.0 引擎与 Agent 工具链
 tests/                离线 Python 回归测试与 Obsidian 插件 Smoke 测试

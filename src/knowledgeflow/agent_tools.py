@@ -82,7 +82,7 @@ STOP_TOKENS = {
 }
 
 EXCLUDE_TOP_DIRS = {".obsidian", ".knowledgeflow", ".git", ".venv", "src", "tests", "docs", "examples"}
-EXCLUDE_ROOT_DOCS = {"README.md", "CHANGELOG.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"}
+EXCLUDE_ROOT_DOCS = {"README.md", "README_EN.md", "CHANGELOG.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md", "LICENSE"}
 
 
 def split_frontmatter(text: str) -> tuple[str, str]:
